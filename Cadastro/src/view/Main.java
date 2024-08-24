@@ -1,7 +1,6 @@
 package view;
 
 import dao.CadastroDao;
-import model.Cadastro;
 import model.Pessoa;
 
 import java.util.Scanner;
@@ -14,12 +13,10 @@ public class Main {
 
       CadastroDao cadastroDao = new CadastroDao();
       Scanner scanner = new Scanner(System.in);
-      Cadastro cadastro = new Cadastro();
+
         // Carrega os cadastros existentes do arquivo
-        Set<Cadastro> cadastros = cadastroDao.getCadastros();
-        if (!cadastros.isEmpty()) {
-            cadastro = cadastros.iterator().next(); // Assume que há apenas um Cadastro no arquivo
-        }
+        Set<Pessoa> pessoas = cadastroDao.getPessoas();
+
 
       while (true){
           System.out.println("\n1. Salvar uma pessoa");
@@ -37,12 +34,12 @@ public class Main {
                   System.out.println("Digite  o email");
                   String email = scanner.nextLine();
 
-                  if(cadastro.buscarPorEmail(email)){
+                  if(cadastroDao.buscarPorEmail(email)){
                       System.out.println("Email ja existe");
                   }else{
                       Pessoa pessoa = new Pessoa(nome, email);
-                      cadastro.addPessoa(pessoa);
-                      if(cadastroDao.salvar(cadastro)){
+
+                      if(cadastroDao.salvar(pessoa)){
                           System.out.println("Pessoa salva com sucesso");
                       }
                       else{
@@ -51,26 +48,23 @@ public class Main {
                   }
                   break;
               case 2:
-                 Set<Pessoa> pessoas=  cadastro.getPessoas();
-                 for(Pessoa p:pessoas){
+                  Set<Pessoa> pessoaAs = cadastroDao.getPessoas();
+                 for(Pessoa p : pessoaAs){
                      System.out.println(p);
                  }
                   break;
               case 3:
-                  System.out.println("Digite o nome a ser deletado");
-                  String nomeDeletar = scanner.nextLine();
+
                   System.out.print("Digite o e-mail para deletar: ");
                   String emailParaDeletar = scanner.nextLine();
-                  Pessoa pessoaParaDeletar = new Pessoa(nomeDeletar, emailParaDeletar);
 
-                  if (cadastro.buscarPorEmail(emailParaDeletar)) {
-                      cadastro.removerPessoa(pessoaParaDeletar);
-                      if (cadastroDao.salvar(cadastro)) {
+
+                  if (cadastroDao.deletarPessoaPorEmail(emailParaDeletar)) {
+
+
                           System.out.println("Pessoa deletada com sucesso!");
-                      } else {
-                          System.out.println("Erro ao deletar a pessoa.");
-                      }
-                  } else {
+
+                 }else {
                       System.out.println("Nenhuma pessoa encontrada com esse e-mail.");
                   }
                   break;

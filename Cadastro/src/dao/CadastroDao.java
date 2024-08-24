@@ -1,6 +1,6 @@
 package dao;
 
-import model.Cadastro;
+import model.Pessoa;
 
 import java.io.*;
 import java.util.HashSet;
@@ -11,7 +11,7 @@ public class CadastroDao{
     private File arquivo;
 
     public CadastroDao(){
-        arquivo = new File("cadastro.ser");
+        arquivo = new File("pessoas.ser");
         if(!arquivo.exists()){
             try {
                 arquivo.createNewFile();
@@ -22,13 +22,13 @@ public class CadastroDao{
             }
         }
     }
-    public Set<Cadastro> getCadastros(){
+    public Set<Pessoa> getPessoas(){
         if(arquivo.length()>0){
             try{
                 FileInputStream inputStream = new FileInputStream(arquivo);
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-                Set<Cadastro> cadastros = (Set<Cadastro>) objectInputStream.readObject();
-                return cadastros;
+                Set<Pessoa> pessoas = (Set<Pessoa>) objectInputStream.readObject();
+                return pessoas;
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
@@ -40,13 +40,13 @@ public class CadastroDao{
         return new HashSet<>();
     }
 
-    public boolean salvar(Cadastro cadastro){
-        Set<Cadastro> cadastros = getCadastros();
-        if(cadastros.add(cadastro)){
+    public boolean salvar(Pessoa pessoa){
+        Set<Pessoa> pessoas = getPessoas();
+        if(pessoas.add(pessoa)){
             try {
                 FileOutputStream outputStream = new FileOutputStream(arquivo);
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-                objectOutputStream.writeObject(cadastros);
+                objectOutputStream.writeObject(pessoas);
                 return true;
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
@@ -56,14 +56,30 @@ public class CadastroDao{
         }
         return false;
     }
-
-    public boolean deletar(Cadastro cadastro) {
-        Set<Cadastro> cadastros = getCadastros();
-        if(cadastros.remove(cadastro)){
+    private void salvarPessoas(Set<Pessoa> pessoas) {
+        try (FileOutputStream outputStream = new FileOutputStream(arquivo);
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
+            objectOutputStream.writeObject(pessoas);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public boolean buscarPorEmail(String email) {
+        Set<Pessoa> pessoas = getPessoas();
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa.getEmail().equals(email)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean deletar(Pessoa pessoa) {
+        Set<Pessoa> pessoas = getPessoas();
+        if(pessoas.remove(pessoa)){
             try{
                 FileOutputStream outputStream = new FileOutputStream(arquivo);
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-                objectOutputStream.writeObject(cadastros);
+                objectOutputStream.writeObject(pessoas);
                 return true;
             } catch (FileNotFoundException e) {
                 System.out.println("Arquivo não encontrado");
@@ -74,5 +90,27 @@ public class CadastroDao{
         }
         return false;
     }
+    public boolean deletarPessoaPorEmail(String email) {
+        Set<Pessoa> pessoas = getPessoas();
+        Pessoa pessoaParaDeletar = null;
+
+        // Buscar a pessoa pelo e-mail
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa.getEmail().equals(email)) {
+                pessoaParaDeletar = pessoa;
+                break;
+            }
+        }
+
+        // Remover a pessoa se encontrada
+        if (pessoaParaDeletar != null) {
+            pessoas.remove(pessoaParaDeletar);
+            salvarPessoas(pessoas);
+            return true;
+        }
+
+        return false; // Retorna falso se a pessoa não foi encontrada
+    }
+
 
 }
