@@ -14,11 +14,12 @@ public class Main {
       CadastroDao cadastroDao = new CadastroDao();
       Scanner scanner = new Scanner(System.in);
 
-        // Carrega os cadastros existentes do arquivo
+
         Set<Pessoa> pessoas = cadastroDao.getPessoas();
 
 
       while (true){
+
           System.out.println("\n1. Salvar uma pessoa");
           System.out.println("2. Listar todas as pessoas");
           System.out.println("3. Deletar uma pessoa pelo e-mail");

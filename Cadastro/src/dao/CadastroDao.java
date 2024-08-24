@@ -94,7 +94,7 @@ public class CadastroDao{
         Set<Pessoa> pessoas = getPessoas();
         Pessoa pessoaParaDeletar = null;
 
-        // Buscar a pessoa pelo e-mail
+
         for (Pessoa pessoa : pessoas) {
             if (pessoa.getEmail().equals(email)) {
                 pessoaParaDeletar = pessoa;
@@ -102,14 +102,14 @@ public class CadastroDao{
             }
         }
 
-        // Remover a pessoa se encontrada
+
         if (pessoaParaDeletar != null) {
             pessoas.remove(pessoaParaDeletar);
             salvarPessoas(pessoas);
             return true;
         }
 
-        return false; // Retorna falso se a pessoa não foi encontrada
+        return false;
     }
 
 
